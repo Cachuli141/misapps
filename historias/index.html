@@ -1,0 +1,2178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historias</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#6D5EF2">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F4F8;
+    --surface:#FFFFFF;
+    --surface-2:#EEF0F6;
+    --ink:#191A23;
+    --ink-soft:#6C6F80;
+    --ink-faint:#A2A5B5;
+    --line:#E3E5EF;
+    --accent:#6D5EF2;
+    --accent-soft:rgba(109,94,242,0.10);
+    --danger:#E5484D;
+    --danger-soft:rgba(229,72,77,0.10);
+    --radius:20px;
+    --shadow:0 1px 2px rgba(25,26,35,0.04), 0 8px 24px rgba(25,26,35,0.04);
+  }
+  [data-theme="dark"]{
+    --bg:#13141B;
+    --surface:#1B1C26;
+    --surface-2:#242530;
+    --ink:#F1F1F5;
+    --ink-soft:#9C9EAF;
+    --ink-faint:#65667A;
+    --line:#2E2F3D;
+    --accent:#8B7FFF;
+    --accent-soft:rgba(139,127,255,0.16);
+    --danger:#FF6B70;
+    --danger-soft:rgba(255,107,112,0.14);
+    --shadow:0 1px 2px rgba(0,0,0,0.2), 0 8px 24px rgba(0,0,0,0.3);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    transition:background .2s, color .2s;
+  }
+  h1,h2,h3,.display{
+    font-family:'Plus Jakarta Sans',sans-serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  button{
+    font-family:inherit;
+    cursor:pointer;
+    border:none;
+    background:none;
+    color:inherit;
+  }
+  input,textarea{
+    font-family:inherit;
+    font-size:inherit;
+    color:inherit;
+  }
+  #app{height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:22px 32px;
+    border-bottom:1px solid var(--line);
+    gap:20px;
+  }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  .brand h1{font-size:22px;}
+  .brand .back{
+    font-size:13px;
+    color:var(--ink-soft);
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 6px;
+    border-radius:6px;
+  }
+  .brand .back:hover{color:var(--ink);}
+  .search{
+    flex:1;
+    max-width:340px;
+    position:relative;
+  }
+  .search input{
+    width:100%;
+    border:1px solid var(--line);
+    background:var(--surface);
+    border-radius:14px;
+    padding:9px 14px 9px 34px;
+    outline:none;
+    transition:border-color .15s;
+  }
+  .search input:focus{border-color:var(--accent);}
+  .search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:0.45;}
+  .btn-primary{
+    background:var(--accent);
+    color:#fff;
+    padding:9px 18px;
+    border-radius:12px;
+    font-size:13.5px;
+    font-weight:600;
+    white-space:nowrap;
+    transition:opacity .15s;
+  }
+  .btn-primary:hover{opacity:0.88;}
+  .btn-ghost{
+    color:var(--ink-soft);
+    padding:8px 14px;
+    border-radius:12px;
+    font-size:13.5px;
+    border:1px solid var(--line);
+    background:var(--surface);
+  }
+  .btn-ghost:hover{color:var(--ink);border-color:var(--ink-faint);}
+  .btn-danger{
+    background:var(--line);
+    color:var(--ink-faint);
+    padding:9px 18px;
+    border-radius:12px;
+    font-size:13.5px;
+    font-weight:600;
+    cursor:not-allowed;
+    transition:background .15s,color .15s;
+  }
+  .btn-danger.active{background:var(--danger);color:#fff;cursor:pointer;}
+  .icon-btn{
+    width:26px;height:26px;
+    border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;
+    color:var(--ink-faint);
+    font-size:13px;
+    flex-shrink:0;
+  }
+  .icon-btn:hover{color:var(--accent);background:var(--accent-soft);}
+  .theme-toggle{
+    width:38px;height:38px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--surface);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--ink-soft);
+    flex-shrink:0;
+  }
+  .theme-toggle:hover{color:var(--accent);border-color:var(--accent);}
+
+  /* ---------- home ---------- */
+  .home-wrap{
+    max-width:980px;
+    margin:0 auto;
+    padding:40px 32px 80px;
+    width:100%;
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+  }
+  .home-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:16px;
+    margin-top:28px;
+  }
+  .story-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:20px;
+    min-height:132px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    cursor:pointer;
+    transition:opacity .15s, transform .15s, border-color .15s;
+    position:relative;
+  }
+  .story-card:hover{border-color:var(--ink-faint);transform:translateY(-2px);}
+  .story-card.is-idea{opacity:0.42;}
+  .story-card.is-idea:hover{opacity:0.62;}
+  .story-card .title-row{display:flex;align-items:center;gap:4px;padding-right:36px;}
+  .story-card h3{font-size:18px;line-height:1.25;}
+  .story-meta{font-size:12px;color:var(--ink-soft);margin-top:10px;}
+  .toggle{
+    position:absolute;
+    top:16px;
+    right:16px;
+    width:34px;
+    height:20px;
+    border-radius:20px;
+    background:var(--line);
+    display:flex;
+    align-items:center;
+    padding:2px;
+    transition:background .15s;
+    flex-shrink:0;
+  }
+  .toggle.on{background:var(--accent);}
+  .toggle .knob{
+    width:16px;height:16px;border-radius:50%;background:#fff;
+    transition:transform .15s;
+    box-shadow:0 1px 2px rgba(0,0,0,0.15);
+  }
+  .toggle.on .knob{transform:translateX(14px);}
+  .mini-toggle{
+    position:relative;
+    width:34px;
+    height:20px;
+    border-radius:20px;
+    background:var(--line);
+    display:flex;
+    align-items:center;
+    padding:2px;
+    transition:background .15s;
+    flex-shrink:0;
+    cursor:pointer;
+  }
+  .mini-toggle.on{background:var(--accent);}
+  .mini-toggle .knob{
+    width:16px;height:16px;border-radius:50%;background:#fff;
+    transition:transform .15s;
+    box-shadow:0 1px 2px rgba(0,0,0,0.15);
+  }
+  .mini-toggle.on .knob{transform:translateX(14px);}
+
+  .add-tile{
+    border:1px dashed var(--ink-faint);
+    border-radius:var(--radius);
+    min-height:132px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:6px;
+    color:var(--ink-soft);
+    transition:border-color .15s,color .15s;
+  }
+  .add-tile:hover{border-color:var(--accent);color:var(--accent);}
+  .add-tile .plus{font-size:22px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;}
+  .add-tile span{font-size:13px;}
+
+  .empty-hint{
+    color:var(--ink-soft);
+    font-size:14px;
+    margin-top:6px;
+  }
+
+  /* ---------- story view ---------- */
+  .story-body{
+    flex:1;
+    display:flex;
+    overflow:hidden;
+    min-height:0;
+  }
+  .timeline-col{
+    flex:1;
+    overflow-y:auto;
+    padding:40px 40px 120px 56px;
+    position:relative;
+  }
+  .story-heading{
+    margin-bottom:34px;
+  }
+  .story-heading h2{font-size:26px;}
+
+  .spine{
+    position:relative;
+  }
+  .spine-line{
+    position:absolute;
+    left:9px;
+    top:0;
+    bottom:0;
+    width:1px;
+    background:var(--line);
+  }
+  .connector{
+    position:relative;
+    display:flex;
+    justify-content:flex-start;
+    padding-left:0;
+    height:26px;
+    align-items:center;
+  }
+  .connector .add-point{
+    width:19px;height:19px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--bg);
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;
+    color:var(--ink-faint);
+    position:relative;
+    z-index:2;
+    transition:border-color .15s,color .15s;
+  }
+  .connector .add-point:hover{border-color:var(--accent);color:var(--accent);}
+
+  .arc-node-wrap{position:relative;}
+  .arc-node{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:14px 16px 14px 0;
+    cursor:pointer;
+  }
+  .node-dot{
+    width:19px;height:19px;
+    border-radius:50%;
+    background:var(--accent);
+    flex-shrink:0;
+    position:relative;
+    z-index:2;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .node-dot.transition{
+    background:var(--surface);
+    border:2px solid var(--accent);
+  }
+  .arc-node .titles{flex:1;min-width:0;}
+  .arc-node .arc-title-row{display:flex;align-items:center;gap:4px;}
+  .arc-node .titles .kind{
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-bottom:2px;
+  }
+  .arc-node .titles h3{font-size:17px;}
+  .arc-node .wc{font-size:12px;color:var(--ink-faint);flex-shrink:0;}
+  .arc-node .drag-handle{
+    cursor:grab;
+    color:var(--ink-faint);
+    font-size:14px;
+    padding:4px;
+  }
+  .arc-node.dragging{opacity:0.4;}
+
+  .arc-canvas{
+    margin:0 0 8px 33px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px;
+    max-height:560px;
+    overflow-y:auto;
+  }
+  .arc-canvas-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:16px;
+  }
+  .arc-canvas-head .label{font-size:12px;color:var(--ink-soft);}
+  .arco-body{
+    margin:0 0 8px 33px;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+  }
+  .arco-body-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:6px;
+  }
+  .arco-body-head .label{font-size:12px;color:var(--ink-soft);}
+  .boxes-flow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    align-items:flex-start;
+  }
+  .box-card{
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:16px;
+    width:260px;
+    padding:14px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .box-card.dragging{opacity:0.4;}
+  .box-head-row{display:flex;align-items:center;gap:6px;}
+  .box-drag-handle{cursor:grab;color:var(--ink-faint);font-size:12px;flex-shrink:0;}
+  .box-drag-handle:hover{color:var(--accent);}
+  .box-card .box-title{
+    border:none;
+    background:none;
+    font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:15px;
+    font-weight:600;
+    outline:none;
+    width:100%;
+  }
+  .box-card .box-title::placeholder{color:var(--ink-faint);}
+  .box-text{
+    outline:none;
+    min-height:80px;
+    font-size:13.5px;
+    line-height:1.6;
+  }
+  .box-text .para{
+    position:relative;
+    padding-left:14px;
+    min-height:1.2em;
+  }
+  .box-text .para.has-content::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0.6em;
+    width:4px;height:4px;
+    border-radius:50%;
+    background:var(--accent);
+  }
+  .box-foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:11px;
+    color:var(--ink-faint);
+    padding-top:6px;
+    border-top:1px solid var(--line);
+  }
+  .box-foot-actions{display:flex;gap:10px;}
+  .box-foot .del{color:var(--ink-faint);}
+  .box-foot .del:hover{color:var(--danger);}
+  .add-box-tile{
+    width:120px;
+    min-height:120px;
+    border:1px dashed var(--ink-faint);
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--ink-soft);
+    flex-direction:column;
+    gap:4px;
+  }
+  .add-box-tile:hover{border-color:var(--accent);color:var(--accent);}
+
+  /* ---------- sidebar ---------- */
+  .sidebar{
+    width:380px;
+    flex-shrink:0;
+    background:var(--surface);
+    border-left:1px solid var(--line);
+    display:flex;
+    height:100%;
+  }
+  .sb-col{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    overflow-y:auto;
+  }
+  .sb-col + .sb-col{border-left:1px solid var(--line);}
+  .sb-head{
+    padding:18px 16px 12px;
+    position:sticky;
+    top:0;
+    background:var(--surface);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid var(--line);
+  }
+  .sb-head h3{font-size:14px;font-weight:500;font-family:'Inter',sans-serif;color:var(--ink-soft);}
+  .sb-add{
+    width:22px;height:22px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;
+    color:var(--ink-soft);
+  }
+  .sb-add:hover{border-color:var(--accent);color:var(--accent);}
+  .sb-body{padding:12px 14px;display:flex;flex-direction:column;gap:10px;}
+
+  .char-card{
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:10px;
+    display:flex;
+    gap:10px;
+    cursor:grab;
+  }
+  .char-card.dragging{opacity:0.4;}
+  .char-card:hover{border-color:var(--ink-faint);}
+  .char-avatar{
+    width:44px;height:44px;
+    border-radius:12px;
+    background:var(--surface-2);
+    background-size:cover;
+    background-position:center;
+    flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--ink-faint);
+    font-family:'Plus Jakarta Sans',sans-serif;
+    font-size:16px;
+    font-weight:600;
+  }
+  .char-info{min-width:0;}
+  .char-info .name{font-weight:600;font-size:13.5px;}
+  .char-tag{
+    display:inline-block;
+    font-size:10.5px;
+    color:var(--accent);
+    background:var(--accent-soft);
+    padding:1px 7px;
+    border-radius:20px;
+    margin-top:4px;
+  }
+  .char-info .sub{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+
+  .idea-card{
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:10px 12px;
+    font-size:13px;
+    cursor:grab;
+    white-space:pre-wrap;
+  }
+  .idea-card:hover{border-color:var(--ink-faint);}
+  .idea-card.dragging, .floating-idea.dragging{opacity:0.4;}
+
+  .sb-empty{font-size:12.5px;color:var(--ink-faint);padding:6px 2px;}
+
+  /* ---------- relaciones ---------- */
+  .relations-wrap{border-top:1px solid var(--line);margin-top:auto;}
+  .relations-tab{
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 16px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+  }
+  .relations-tab:hover{color:var(--ink);}
+  .relations-tab .chev{font-size:10px;color:var(--ink-faint);}
+  .relations-body{padding:0 14px 16px;display:flex;flex-direction:column;gap:12px;}
+  .relation-box{
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:12px;
+    background:var(--surface-2);
+  }
+  .relation-box-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  .relation-box-head h4{font-size:13.5px;}
+  .relation-entry{
+    display:flex;
+    gap:8px;
+    align-items:flex-start;
+    margin-bottom:10px;
+    position:relative;
+    padding-right:18px;
+  }
+  .relation-pair{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    width:104px;
+    flex-shrink:0;
+    font-size:11.5px;
+  }
+  .pair-main{font-weight:600;color:var(--ink);}
+  .pair-arrow{color:var(--ink-faint);font-size:11px;}
+  .relation-pair select{
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:4px 6px;
+    font-size:11px;
+    background:var(--surface);
+    width:100%;
+  }
+  .relation-text{
+    flex:1;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:6px 8px;
+    font-size:12.5px;
+    resize:vertical;
+    background:var(--surface);
+    outline:none;
+  }
+  .relation-text:focus{border-color:var(--accent);}
+  .del-entry{
+    position:absolute;
+    top:0;
+    right:0;
+    color:var(--ink-faint);
+    font-size:12px;
+  }
+  .del-entry:hover{color:var(--danger);}
+  .add-entry-btn{
+    font-size:12px;
+    color:var(--accent);
+    padding:4px 2px;
+  }
+  .add-tile-mini{
+    border:1px dashed var(--ink-faint);
+    border-radius:12px;
+    padding:8px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    width:100%;
+    text-align:center;
+  }
+  .add-tile-mini:hover{border-color:var(--accent);color:var(--accent);}
+
+  /* ---------- ideas flotantes ---------- */
+  .floating-idea{
+    position:absolute;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:10px 12px;
+    font-size:13px;
+    white-space:pre-wrap;
+    box-shadow:var(--shadow);
+    cursor:grab;
+    max-width:220px;
+    z-index:5;
+  }
+  .floating-idea:hover{border-color:var(--accent);}
+
+  /* ---------- modal ---------- */
+  .overlay{
+    position:fixed;inset:0;
+    background:rgba(10,10,14,0.45);
+    display:flex;align-items:center;justify-content:center;
+    z-index:50;
+    padding:20px;
+  }
+  .modal{
+    background:var(--surface);
+    border-radius:24px;
+    width:100%;
+    max-width:420px;
+    max-height:88vh;
+    overflow-y:auto;
+    padding:26px;
+  }
+  .modal.modal-large{max-width:800px;}
+  .rel-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:14px;
+  }
+  .modal h2{font-size:19px;margin-bottom:18px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--ink-soft);margin-bottom:6px;}
+  .field input[type=text],
+  .field input[type=number],
+  .field textarea{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:9px 11px;
+    outline:none;
+    resize:vertical;
+    background:var(--surface);
+  }
+  .field input:focus,.field textarea:focus{border-color:var(--accent);}
+  .field-row{display:flex;gap:10px;}
+  .field-row .field{flex:1;}
+  .tag-options{display:flex;flex-wrap:wrap;gap:8px;}
+  .tag-opt{
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:6px 13px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+  .tag-opt.sel{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .img-drop{
+    border:1px dashed var(--line);
+    border-radius:14px;
+    padding:14px;
+    text-align:center;
+    font-size:12px;
+    color:var(--ink-soft);
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    min-height:60px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .img-drop img{max-height:90px;border-radius:10px;}
+  .modal-actions{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:20px;
+  }
+  .modal-actions .right{display:flex;gap:8px;}
+  .link-danger{font-size:12.5px;color:var(--ink-faint);}
+  .link-danger:hover{color:var(--danger);}
+  .confirm-warning{
+    background:var(--danger-soft);
+    color:var(--danger);
+    border-radius:12px;
+    padding:10px 12px;
+    font-size:12.5px;
+    margin-bottom:16px;
+  }
+  .confirm-switch-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:4px 2px;
+  }
+  .confirm-switch-row span{font-size:13px;color:var(--ink-soft);}
+
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  @media (max-width: 860px){
+    .sidebar{display:none;}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="save-status" style="position:fixed;bottom:14px;right:18px;font-size:11.5px;color:var(--danger);background:var(--surface);padding:4px 10px;border-radius:10px;border:1px solid var(--line);opacity:0.95;z-index:100;"></div>
+
+<script>
+/* ===================== STATE ===================== */
+let state = { stories: [] };
+let view = { screen: 'home', storyId: null, search: '', openArcos: new Set(), openItems: new Set() };
+let saveTimer = null;
+let dragArcoId = null;
+let dragItemId = null;
+let dragCharId = null;
+let dragIdeaId = null;
+let dragBoxId = null;
+let boxClipboard = null;
+
+const TAGS = ['Protagonista','Secundario','Extra','Antagonista','Villano'];
+
+function uid(){ return Math.random().toString(36).slice(2,10); }
+
+/* ===================== PERSISTENCE ===================== */
+const STORAGE_KEY = 'historias-organizador-data';
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) state = JSON.parse(raw);
+  }catch(e){ console.error('no se pudo cargar', e); }
+  (state.stories||[]).forEach(s=>{
+    if(!s.relations) s.relations = [];
+    (s.ideas||[]).forEach(i=>{ if(i.floating===undefined) i.floating = null; });
+    if(!s.arcos){
+      const oldArcs = s.arcs || [];
+      const items = oldArcs.map(a=>({
+        id: a.id,
+        title: a.title,
+        type: a.type==='transition' ? 'transicion' : 'evento',
+        boxes: a.boxes || []
+      }));
+      s.arcos = items.length ? [{ id: uid(), title: 'Arco 1', items }] : [];
+      delete s.arcs;
+    }
+  });
+  render();
+}
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveNow, 300);
+}
+function saveNow(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    setSaveStatus('ok');
+  }catch(e){
+    console.error('no se pudo guardar', e);
+    setSaveStatus('error');
+  }
+}
+function setSaveStatus(status){
+  const el = document.getElementById('save-status');
+  if(!el) return;
+  el.textContent = status==='error' ? 'No se pudo guardar (memoria del navegador llena o bloqueada)' : '';
+}
+
+/* ===================== RESPALDO (exportar / importar) ===================== */
+function exportBackup(){
+  const dataStr = JSON.stringify(state, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `respaldo-historias-${date}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=> URL.revokeObjectURL(url), 1000);
+}
+
+function triggerImportBackup(){
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json,.json';
+  input.style.display = 'none';
+  document.body.appendChild(input);
+  input.addEventListener('change', ()=>{
+    const file = input.files[0];
+    input.remove();
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      let parsed;
+      try{ parsed = JSON.parse(reader.result); }
+      catch(e){ showMessageModal('Archivo no válido', 'Ese archivo no se pudo leer como respaldo. Revisa que sea el .json que exportaste desde aquí.'); return; }
+      if(!parsed || !Array.isArray(parsed.stories)){
+        showMessageModal('Archivo no válido', 'Ese archivo no tiene el formato de un respaldo de esta app.');
+        return;
+      }
+      confirmImportReplace(parsed);
+    };
+    reader.readAsText(file);
+  });
+  input.click();
+}
+
+function showMessageModal(title, message){
+  showModal(`
+    <h2>${esc(title)}</h2>
+    <p style="color:var(--ink-soft);font-size:13.5px;">${esc(message)}</p>
+    <div class="modal-actions"><span></span><div class="right"><button class="btn-primary" id="m-ok">Entendido</button></div></div>
+  `, ()=>{ document.getElementById('m-ok').onclick = closeModal; });
+}
+
+function confirmImportReplace(parsedData){
+  showModal(`
+    <h2>Restaurar respaldo</h2>
+    <p class="confirm-warning">Esto va a reemplazar TODAS tus historias actuales por las del archivo elegido. Si no respaldaste lo que tienes ahora, se pierde. Esta acción no se puede deshacer.</p>
+    <div class="confirm-switch-row">
+      <div class="mini-toggle" id="confirm-toggle"><div class="knob"></div></div>
+      <span>Activa esto para poder restaurar</span>
+    </div>
+    <div class="modal-actions">
+      <span></span>
+      <div class="right">
+        <button class="btn-ghost" id="m-cancel">Cancelar</button>
+        <button class="btn-danger" id="m-confirm-import">Restaurar</button>
+      </div>
+    </div>
+  `, ()=>{
+    const toggle = document.getElementById('confirm-toggle');
+    const confirmBtn = document.getElementById('m-confirm-import');
+    let enabled = false;
+    toggle.addEventListener('click', ()=>{
+      enabled = !enabled;
+      toggle.classList.toggle('on', enabled);
+      confirmBtn.classList.toggle('active', enabled);
+    });
+    document.getElementById('m-cancel').onclick = closeModal;
+    confirmBtn.addEventListener('click', ()=>{
+      if(!enabled) return;
+      applyImportedState(parsedData);
+      closeModal();
+    });
+  });
+}
+
+function applyImportedState(parsedData){
+  state = parsedData;
+  (state.stories||[]).forEach(s=>{
+    if(!s.relations) s.relations = [];
+    (s.ideas||[]).forEach(i=>{ if(i.floating===undefined) i.floating = null; });
+    if(!s.arcos){
+      const oldArcs = s.arcs || [];
+      const items = oldArcs.map(a=>({
+        id: a.id,
+        title: a.title,
+        type: a.type==='transition' ? 'transicion' : 'evento',
+        boxes: a.boxes || []
+      }));
+      s.arcos = items.length ? [{ id: uid(), title: 'Arco 1', items }] : [];
+      delete s.arcs;
+    }
+  });
+  view.screen = 'home'; view.storyId = null;
+  view.openArcos = new Set(); view.openItems = new Set();
+  scheduleSave();
+  render();
+}
+
+/* ===================== HELPERS ===================== */
+function getStory(id){ return state.stories.find(s=>s.id===id); }
+function countWords(text){
+  if(!text) return 0;
+  const t = text.trim();
+  return t.length ? t.split(/\s+/).length : 0;
+}
+function arcWordCount(item){
+  return item.boxes.reduce((sum,b)=> sum + countWords((b.paragraphs||[]).join(' ')), 0);
+}
+function arcoWordCount(arco){
+  return arco.items.reduce((sum,it)=> sum + arcWordCount(it), 0);
+}
+function findItemWithArco(story, itemId){
+  for(const arco of story.arcos){
+    const it = arco.items.find(i=>i.id===itemId);
+    if(it) return { arco, item: it };
+  }
+  return null;
+}
+function findItem(story, itemId){
+  const found = findItemWithArco(story, itemId);
+  return found ? found.item : null;
+}
+function esc(s){
+  return (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+/* ===================== RENDER ROOT ===================== */
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = view.screen === 'home' ? renderHome() : renderStory(getStory(view.storyId));
+  attachHomeEvents();
+  attachStoryEvents();
+}
+
+/* ===================== HOME ===================== */
+function renderHome(){
+  const q = view.search.trim().toLowerCase();
+  const stories = state.stories.filter(s => s.title.toLowerCase().includes(q));
+  return `
+    <div class="topbar">
+      <div class="brand"><h1>Historias</h1></div>
+      <div class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="search-input" type="text" placeholder="Buscar historia" value="${esc(view.search)}">
+      </div>
+      <button class="theme-toggle" id="theme-toggle-btn">${themeIcon()}</button>
+      <button class="theme-toggle" id="export-backup-btn" title="Exportar respaldo">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+      </button>
+      <button class="theme-toggle" id="import-backup-btn" title="Importar respaldo">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3M7 8l5-5 5 5M5 21h14"/></svg>
+      </button>
+      <button class="btn-primary" id="new-story-btn">Nueva historia</button>
+    </div>
+    <div class="home-wrap">
+      ${state.stories.length===0 ? `<p class="empty-hint">Todavía no hay historias. Crea la primera para empezar.</p>` : ''}
+      <div class="home-grid">
+        ${stories.map(s=>`
+          <div class="story-card ${s.isIdea?'is-idea':''}" data-id="${s.id}">
+            <div>
+              <div class="title-row">
+                <h3>${esc(s.title)}</h3>
+                <button class="icon-btn" data-edit-title="${s.id}" title="Renombrar">✎</button>
+              </div>
+              <div class="story-meta">${s.arcos.length} arco${s.arcos.length===1?'':'s'} · ${s.characters.length} personaje${s.characters.length===1?'':'s'}</div>
+            </div>
+            <div class="toggle ${s.isIdea?'on':''}" data-toggle="${s.id}"><div class="knob"></div></div>
+          </div>
+        `).join('')}
+        <div class="add-tile" id="add-story-tile">
+          <div class="plus">+</div>
+          <span>Nueva historia</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function attachHomeEvents(){
+  if(view.screen !== 'home') return;
+  const searchInput = document.getElementById('search-input');
+  if(searchInput){
+    searchInput.addEventListener('input', e=>{ view.search = e.target.value; render(); searchInput.focus(); searchInput.setSelectionRange(searchInput.value.length,searchInput.value.length); });
+  }
+  document.getElementById('add-story-tile').addEventListener('click', openAddStoryModal);
+  document.getElementById('new-story-btn').addEventListener('click', openAddStoryModal);
+  document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
+  document.getElementById('export-backup-btn').addEventListener('click', exportBackup);
+  document.getElementById('import-backup-btn').addEventListener('click', triggerImportBackup);
+  document.querySelectorAll('.story-card').forEach(card=>{
+    card.addEventListener('click', (e)=>{
+      if(e.target.closest('.toggle') || e.target.closest('[data-edit-title]')) return;
+      view.screen='story'; view.storyId=card.dataset.id; view.openArcos=new Set(); view.openItems=new Set(); render();
+    });
+  });
+  document.querySelectorAll('[data-toggle]').forEach(t=>{
+    t.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const s = getStory(t.dataset.toggle);
+      s.isIdea = !s.isIdea;
+      scheduleSave(); render();
+    });
+  });
+  document.querySelectorAll('[data-edit-title]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      openRenameStoryModal(getStory(btn.dataset.editTitle));
+    });
+  });
+}
+
+function openAddStoryModal(){
+  showModal(`
+    <h2>Nueva historia</h2>
+    <div class="field"><label>Título</label><input type="text" id="m-title" placeholder="Nombre de la historia"></div>
+    <div class="modal-actions">
+      <span></span>
+      <div class="right">
+        <button class="btn-ghost" id="m-cancel">Cancelar</button>
+        <button class="btn-primary" id="m-save">Crear</button>
+      </div>
+    </div>
+  `, ()=>{
+    document.getElementById('m-title').focus();
+    document.getElementById('m-cancel').onclick = closeModal;
+    document.getElementById('m-save').onclick = ()=>{
+      const title = document.getElementById('m-title').value.trim();
+      if(!title) return;
+      state.stories.push({ id: uid(), title, isIdea:false, arcos:[], characters:[], ideas:[], relations:[] });
+      scheduleSave(); closeModal(); render();
+    };
+  });
+}
+
+function openRenameStoryModal(story){
+  showModal(`
+    <h2>Renombrar historia</h2>
+    <div class="field"><label>Título</label><input type="text" id="m-rename-title" value="${esc(story.title)}"></div>
+    <div class="modal-actions">
+      <span></span>
+      <div class="right">
+        <button class="btn-ghost" id="m-cancel">Cancelar</button>
+        <button class="btn-primary" id="m-save">Guardar</button>
+      </div>
+    </div>
+  `, ()=>{
+    const inp = document.getElementById('m-rename-title');
+    inp.focus(); inp.select();
+    document.getElementById('m-cancel').onclick = closeModal;
+    document.getElementById('m-save').onclick = ()=>{
+      const title = inp.value.trim();
+      if(!title) return;
+      story.title = title;
+      scheduleSave(); closeModal(); render();
+    };
+  });
+}
+
+function openRenameNodeModal(obj, kindWord){
+  showModal(`
+    <h2>Renombrar ${kindWord}</h2>
+    <div class="field"><label>Título</label><input type="text" id="m-rename-node"></div>
+    <div class="modal-actions">
+      <span></span>
+      <div class="right">
+        <button class="btn-ghost" id="m-cancel">Cancelar</button>
+        <button class="btn-primary" id="m-save">Guardar</button>
+      </div>
+    </div>
+  `, ()=>{
+    const inp = document.getElementById('m-rename-node');
+    inp.value = obj.title;
+    inp.focus(); inp.select();
+    document.getElementById('m-cancel').onclick = closeModal;
+    document.getElementById('m-save').onclick = ()=>{
+      const title = inp.value.trim();
+      if(!title) return;
+      obj.title = title;
+      scheduleSave(); closeModal(); render();
+    };
+  });
+}
+
+/* ===================== STORY VIEW ===================== */
+function renderStory(story){
+  if(!story){ view.screen='home'; return renderHome(); }
+  return `
+    <div class="topbar">
+      <div class="brand">
+        <button class="back" id="back-btn">&larr; Historias</button>
+      </div>
+      <div class="brand" style="flex:1;justify-content:center;gap:6px;">
+        <h1 style="font-size:19px;">${esc(story.title)}</h1>
+        <button class="icon-btn" id="edit-story-title" title="Renombrar">✎</button>
+      </div>
+      <button class="theme-toggle" id="theme-toggle-btn">${themeIcon()}</button>
+    </div>
+    <div class="story-body">
+      <div class="timeline-col" id="timeline-col">
+        ${renderSpine(story)}
+        ${story.ideas.filter(i=>i.floating).map(i=>renderFloatingIdea(i)).join('')}
+      </div>
+      <div class="sidebar">
+        ${renderCharCol(story)}
+        ${renderIdeaCol(story)}
+      </div>
+    </div>
+  `;
+}
+
+function renderFloatingIdea(idea){
+  return `<div class="floating-idea" draggable="true" data-idea-id="${idea.id}" style="left:${idea.floating.x}px;top:${idea.floating.y}px;">${esc(idea.text)}</div>`;
+}
+
+function renderSpine(story){
+  let html = `<div class="spine">`;
+  html += `<div class="spine-line"></div>`;
+  html += connectorRow('start');
+  story.arcos.forEach(arco=>{
+    html += `
+      <div class="arc-node-wrap" draggable="true" data-arco-id="${arco.id}">
+        <div class="arc-node" data-open-arco="${arco.id}">
+          <span class="drag-handle">⠿</span>
+          <div class="node-dot"></div>
+          <div class="titles">
+            <div class="kind">Arco</div>
+            <div class="arc-title-row"><h3>${esc(arco.title)}</h3><button class="icon-btn" data-edit-arco-title="${arco.id}" title="Renombrar">✎</button></div>
+          </div>
+          <div class="wc">${arcoWordCount(arco)} palabras</div>
+        </div>
+        ${view.openArcos.has(arco.id) ? renderArcoBody(story, arco) : ''}
+      </div>
+    `;
+    html += connectorRow(arco.id);
+  });
+  html += `</div>`;
+  return html;
+}
+
+function connectorRow(afterId){
+  return `<div class="connector"><div class="add-point" data-insert-arco-after="${afterId}">+</div></div>`;
+}
+
+function itemConnectorRow(arcoId, afterId){
+  return `<div class="connector"><div class="add-point" data-insert-item-after="${afterId}" data-arco-id="${arcoId}">+</div></div>`;
+}
+
+function renderArcoBody(story, arco){
+  let inner = `<div class="spine">`;
+  inner += `<div class="spine-line"></div>`;
+  inner += itemConnectorRow(arco.id, 'start');
+  arco.items.forEach(item=>{
+    inner += `
+      <div class="arc-node-wrap" draggable="true" data-item-id="${item.id}" data-arco-id="${arco.id}">
+        <div class="arc-node" data-open-item="${item.id}">
+          <span class="drag-handle">⠿</span>
+          <div class="node-dot ${item.type==='transicion'?'transition':''}"></div>
+          <div class="titles">
+            <div class="kind">${item.type==='transicion'?'Transición':'Evento'}</div>
+            <div class="arc-title-row"><h3>${esc(item.title)}</h3><button class="icon-btn" data-edit-item-title="${item.id}" title="Renombrar">✎</button></div>
+          </div>
+          <div class="wc">${arcWordCount(item)} palabras</div>
+        </div>
+        ${view.openItems.has(item.id) ? renderArcCanvas(story, item) : ''}
+      </div>
+    `;
+    inner += itemConnectorRow(arco.id, item.id);
+  });
+  inner += `</div>`;
+  return `
+    <div class="arco-body">
+      <div class="arco-body-head">
+        <span class="label">${arco.items.length} evento${arco.items.length===1?'':'s'} y transiciones · ${arcoWordCount(arco)} palabras en total</span>
+        <button class="link-danger" data-del-arco="${arco.id}">Eliminar arco</button>
+      </div>
+      ${inner}
+    </div>
+  `;
+}
+
+function renderArcCanvas(story, item){
+  return `
+    <div class="arc-canvas" data-canvas-for="${item.id}">
+      <div class="arc-canvas-head">
+        <span class="label">${item.type==='transicion'?'Transición':'Evento'} · ${arcWordCount(item)} palabras en total</span>
+        <button class="link-danger" data-del-item="${item.id}">Eliminar</button>
+      </div>
+      <div class="boxes-flow">
+        ${item.boxes.map(b=>renderBox(item,b)).join('')}
+        <div class="add-box-tile" data-add-box="${item.id}">
+          <div class="plus" style="font-size:20px;">+</div>
+          <span style="font-size:11.5px;">Añadir recuadro</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderBox(arc, box){
+  const parasHtml = (box.paragraphs && box.paragraphs.length)
+    ? box.paragraphs.map(p=>`<div class="para ${p.trim()?'has-content':''}">${esc(p)}</div>`).join('')
+    : `<div class="para"></div>`;
+  const wc = countWords((box.paragraphs||[]).join(' '));
+  return `
+    <div class="box-card" data-box-id="${box.id}" data-arc-id="${arc.id}">
+      <div class="box-head-row">
+        <span class="box-drag-handle" draggable="true" title="Mover">⠿</span>
+        <input class="box-title" type="text" placeholder="Qué pasa aquí" value="${esc(box.title)}" data-box-title="${box.id}">
+      </div>
+      <div class="box-text" contenteditable="true" data-box-text="${box.id}">${parasHtml}</div>
+      <div class="box-foot">
+        <span>${wc} palabras</span>
+        <div class="box-foot-actions">
+          <button class="del" data-copy-box="${box.id}">Copiar</button>
+          <button class="del" data-del-box="${box.id}">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCharCol(story){
+  return `
+    <div class="sb-col">
+      <div class="sb-head"><h3>Personajes</h3><button class="sb-add" id="add-char-btn">+</button></div>
+      <div class="sb-body" id="char-list">
+        ${story.characters.length===0 ? '<div class="sb-empty">Aún no hay personajes.</div>' : ''}
+        ${story.characters.map(c=>`
+          <div class="char-card" draggable="true" data-char-id="${c.id}">
+            <div class="char-avatar" style="${c.image?`background-image:url(${c.image})`:''}">${c.image?'':esc((c.name||'?').charAt(0).toUpperCase())}</div>
+            <div class="char-info">
+              <div class="name">${esc(c.name)}</div>
+              <div class="sub">${[c.age?c.age+' años':'', c.height?c.height:''].filter(Boolean).join(' · ')}</div>
+              ${c.tag?`<span class="char-tag">${esc(c.tag)}</span>`:''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      ${renderRelationsTab(story)}
+    </div>
+  `;
+}
+
+function renderRelationsTab(story){
+  return `
+    <div class="relations-wrap">
+      <button class="relations-tab" id="open-relations-panel">
+        <span>Relaciones entre personajes</span>
+        <span class="chev">&rsaquo;</span>
+      </button>
+    </div>
+  `;
+}
+
+function renderRelationBox(story, r){
+  const main = story.characters.find(c=>c.id===r.characterId);
+  const mainName = main ? main.name : '(personaje eliminado)';
+  return `
+    <div class="relation-box" data-relation-id="${r.id}">
+      <div class="relation-box-head">
+        <h4>${esc(mainName)}</h4>
+        <button class="link-danger" data-del-relation="${r.id}">Eliminar</button>
+      </div>
+      ${r.entries.map(entry=>renderRelationEntry(story, r, entry, mainName)).join('')}
+      <button class="add-entry-btn" data-add-entry="${r.id}">+ Añadir personaje</button>
+    </div>
+  `;
+}
+
+function renderRelationEntry(story, r, entry, mainName){
+  const others = story.characters.filter(c=>c.id!==r.characterId);
+  return `
+    <div class="relation-entry" data-entry-id="${entry.id}" data-relation-id="${r.id}">
+      <div class="relation-pair">
+        <span class="pair-main">${esc(mainName)}</span>
+        <span class="pair-arrow">&darr;</span>
+        <select data-entry-target="${entry.id}">
+          <option value="">Elegir…</option>
+          ${others.map(o=>`<option value="${o.id}" ${o.id===entry.targetId?'selected':''}>${esc(o.name)}</option>`).join('')}
+        </select>
+      </div>
+      <textarea class="relation-text" rows="2" placeholder="Qué piensa de él/ella..." data-entry-text="${entry.id}">${esc(entry.text)}</textarea>
+      <button class="del-entry" data-del-entry="${entry.id}" data-relation-id-del="${r.id}">✕</button>
+    </div>
+  `;
+}
+
+function renderIdeaCol(story){
+  const listed = story.ideas.filter(i=>!i.floating);
+  return `
+    <div class="sb-col">
+      <div class="sb-head"><h3>Ideas</h3><button class="sb-add" id="add-idea-btn">+</button></div>
+      <div class="sb-body" id="ideas-list">
+        ${listed.length===0 ? '<div class="sb-empty">Ideas sueltas sin ubicación aún.</div>' : ''}
+        ${listed.map(i=>`<div class="idea-card" draggable="true" data-idea-id="${i.id}">${esc(i.text)}</div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+/* ===================== STORY EVENTS ===================== */
+function attachStoryEvents(){
+  if(view.screen !== 'story') return;
+  const story = getStory(view.storyId);
+  if(!story) return;
+
+  document.getElementById('back-btn').addEventListener('click', ()=>{ view.screen='home'; render(); });
+  document.getElementById('edit-story-title').addEventListener('click', ()=> openRenameStoryModal(story));
+  document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
+
+  // insertar arco (nivel superior)
+  document.querySelectorAll('[data-insert-arco-after]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      openAddArcoModal(btn.dataset.insertArcoAfter);
+    });
+  });
+
+  // insertar evento/transición dentro de un arco
+  document.querySelectorAll('[data-insert-item-after]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const arco = story.arcos.find(a=>a.id===btn.dataset.arcoId);
+      openInsertItemChooser(story, arco, btn.dataset.insertItemAfter, btn);
+    });
+  });
+
+  // abrir/cerrar arco (varios a la vez)
+  document.querySelectorAll('[data-open-arco]').forEach(node=>{
+    node.addEventListener('click', (e)=>{
+      if(e.target.closest('.drag-handle') || e.target.closest('[data-edit-arco-title]')) return;
+      const id = node.dataset.openArco;
+      if(view.openArcos.has(id)) view.openArcos.delete(id); else view.openArcos.add(id);
+      render();
+    });
+  });
+
+  // abrir/cerrar evento o transición (varios a la vez)
+  document.querySelectorAll('[data-open-item]').forEach(node=>{
+    node.addEventListener('click', (e)=>{
+      if(e.target.closest('.drag-handle') || e.target.closest('[data-edit-item-title]')) return;
+      const id = node.dataset.openItem;
+      if(view.openItems.has(id)) view.openItems.delete(id); else view.openItems.add(id);
+      render();
+    });
+  });
+
+  document.querySelectorAll('[data-del-arco]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const arco = story.arcos.find(a=>a.id===btn.dataset.delArco);
+      confirmDelete(
+        'Eliminar arco',
+        `Se va a borrar "${arco.title}" junto con todos sus eventos, transiciones y lo escrito dentro. Esta acción no se puede deshacer.`,
+        ()=>{
+          story.arcos = story.arcos.filter(a=>a.id!==btn.dataset.delArco);
+          view.openArcos.delete(btn.dataset.delArco);
+          scheduleSave(); render();
+        }
+      );
+    });
+  });
+
+  document.querySelectorAll('[data-del-item]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const found = findItemWithArco(story, btn.dataset.delItem);
+      if(!found) return;
+      confirmDelete(
+        `Eliminar ${found.item.type==='transicion'?'transición':'evento'}`,
+        `Se va a borrar "${found.item.title}" junto con todo lo escrito dentro. Esta acción no se puede deshacer.`,
+        ()=>{
+          found.arco.items = found.arco.items.filter(i=>i.id!==btn.dataset.delItem);
+          view.openItems.delete(btn.dataset.delItem);
+          scheduleSave(); render();
+        }
+      );
+    });
+  });
+
+  document.querySelectorAll('[data-edit-arco-title]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const arco = story.arcos.find(a=>a.id===btn.dataset.editArcoTitle);
+      openRenameNodeModal(arco, 'arco');
+    });
+  });
+
+  document.querySelectorAll('[data-edit-item-title]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const item = findItem(story, btn.dataset.editItemTitle);
+      openRenameNodeModal(item, item.type==='transicion' ? 'transición' : 'evento');
+    });
+  });
+
+  // arrastrar para reordenar arcos
+  document.querySelectorAll('.arc-node-wrap[data-arco-id]:not([data-item-id])').forEach(wrap=>{
+    wrap.addEventListener('dragstart', (e)=>{ e.stopPropagation(); dragArcoId = wrap.dataset.arcoId; wrap.classList.add('dragging'); });
+    wrap.addEventListener('dragend', (e)=>{ e.stopPropagation(); wrap.classList.remove('dragging'); dragArcoId=null; });
+    wrap.addEventListener('dragover', (e)=> e.preventDefault());
+    wrap.addEventListener('drop', (e)=>{
+      e.preventDefault(); e.stopPropagation();
+      const targetId = wrap.dataset.arcoId;
+      if(!dragArcoId || dragArcoId===targetId) return;
+      const fromIdx = story.arcos.findIndex(a=>a.id===dragArcoId);
+      const toIdx = story.arcos.findIndex(a=>a.id===targetId);
+      const [moved] = story.arcos.splice(fromIdx,1);
+      story.arcos.splice(toIdx,0,moved);
+      scheduleSave(); render();
+    });
+  });
+
+  // arrastrar eventos/transiciones: reordenar dentro del mismo arco, o moverlos a otro arco
+  document.querySelectorAll('.arc-node-wrap[data-item-id]').forEach(wrap=>{
+    wrap.addEventListener('dragstart', (e)=>{
+      e.stopPropagation();
+      dragItemId = wrap.dataset.itemId;
+      wrap.classList.add('dragging');
+    });
+    wrap.addEventListener('dragend', (e)=>{
+      e.stopPropagation();
+      wrap.classList.remove('dragging');
+      dragItemId = null;
+    });
+    wrap.addEventListener('dragover', (e)=>{ e.preventDefault(); e.stopPropagation(); });
+    wrap.addEventListener('drop', (e)=>{
+      e.preventDefault(); e.stopPropagation();
+      if(!dragItemId || dragItemId===wrap.dataset.itemId) return;
+      const found = findItemWithArco(story, dragItemId);
+      if(!found) return;
+      const targetArco = story.arcos.find(a=>a.id===wrap.dataset.arcoId);
+      found.arco.items = found.arco.items.filter(i=>i.id!==dragItemId);
+      const toIdx = targetArco.items.findIndex(i=>i.id===wrap.dataset.itemId);
+      targetArco.items.splice(toIdx,0,found.item);
+      scheduleSave(); render();
+    });
+  });
+
+  // soltar un evento/transición directamente sobre el cuerpo de un arco (para moverlo ahí, al final)
+  document.querySelectorAll('.arco-body').forEach(body=>{
+    body.addEventListener('dragover', (e)=> e.preventDefault());
+    body.addEventListener('drop', (e)=>{
+      e.preventDefault();
+      if(!dragItemId) return;
+      const wrap = body.closest('.arc-node-wrap');
+      const targetArco = story.arcos.find(a=>a.id===wrap.dataset.arcoId);
+      const found = findItemWithArco(story, dragItemId);
+      if(!found || found.arco.id===targetArco.id) return;
+      found.arco.items = found.arco.items.filter(i=>i.id!==dragItemId);
+      targetArco.items.push(found.item);
+      scheduleSave(); render();
+    });
+  });
+
+  // boxes
+  document.querySelectorAll('[data-add-box]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const item = findItem(story, btn.dataset.addBox);
+      openBoxChooser(story, item, btn);
+    });
+  });
+
+  document.querySelectorAll('[data-copy-box]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const box = findBox(story, btn.dataset.copyBox);
+      boxClipboard = { title: box.title, paragraphs: [...(box.paragraphs||[])] };
+      const original = btn.textContent;
+      btn.textContent = 'Copiado ✓';
+      setTimeout(()=>{ btn.textContent = original; }, 1200);
+    });
+  });
+
+  document.querySelectorAll('.box-drag-handle').forEach(handle=>{
+    handle.addEventListener('dragstart', (e)=>{
+      e.stopPropagation();
+      const card = handle.closest('.box-card');
+      dragBoxId = card.dataset.boxId;
+      card.classList.add('dragging');
+    });
+    handle.addEventListener('dragend', (e)=>{
+      e.stopPropagation();
+      const card = handle.closest('.box-card');
+      card.classList.remove('dragging');
+      dragBoxId = null;
+    });
+  });
+  document.querySelectorAll('.box-card').forEach(card=>{
+    card.addEventListener('dragover', e=>e.preventDefault());
+    card.addEventListener('drop', e=>{
+      e.preventDefault(); e.stopPropagation();
+      if(!dragBoxId) return;
+      const targetId = card.dataset.boxId;
+      if(dragBoxId===targetId) return;
+      const source = findBoxWithItem(story, dragBoxId);
+      const targetItem = findItem(story, card.dataset.arcId);
+      if(!source || !targetItem) return;
+      source.item.boxes = source.item.boxes.filter(b=>b.id!==dragBoxId);
+      const toIdx = targetItem.boxes.findIndex(b=>b.id===targetId);
+      targetItem.boxes.splice(toIdx===-1?targetItem.boxes.length:toIdx, 0, source.box);
+      scheduleSave(); render();
+    });
+  });
+
+  // soltar un recuadro directamente sobre el lienzo de otro evento/transición (área vacía o fuera de otro recuadro)
+  document.querySelectorAll('.arc-canvas').forEach(canvas=>{
+    canvas.addEventListener('dragover', e=>e.preventDefault());
+    canvas.addEventListener('drop', e=>{
+      e.preventDefault();
+      if(!dragBoxId) return;
+      const targetItem = findItem(story, canvas.dataset.canvasFor);
+      const source = findBoxWithItem(story, dragBoxId);
+      if(!source || !targetItem) return;
+      if(source.item.id === targetItem.id) return;
+      source.item.boxes = source.item.boxes.filter(b=>b.id!==dragBoxId);
+      targetItem.boxes.push(source.box);
+      scheduleSave(); render();
+    });
+  });
+
+  document.querySelectorAll('[data-box-title]').forEach(inp=>{
+    inp.addEventListener('click', e=>e.stopPropagation());
+    inp.addEventListener('input', ()=>{
+      const box = findBox(story, inp.dataset.boxTitle);
+      box.title = inp.value;
+      scheduleSave();
+    });
+  });
+
+  document.querySelectorAll('[data-box-text]').forEach(div=>{
+    div.addEventListener('click', e=>e.stopPropagation());
+    div.addEventListener('keydown', e=>{
+      if(e.key==='Enter'){
+        e.preventDefault();
+        document.execCommand('insertParagraph');
+      }
+    });
+    div.addEventListener('input', ()=>{
+      normalizeParas(div);
+      const box = findBox(story, div.dataset.boxText);
+      box.paragraphs = Array.from(div.querySelectorAll('.para')).map(p=>p.textContent);
+      scheduleSave();
+      updateWordCounts(story);
+    });
+  });
+
+  document.querySelectorAll('[data-del-box]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const card = btn.closest('.box-card');
+      const arcId = card.dataset.arcId;
+      confirmDelete(
+        'Eliminar recuadro',
+        'Se va a borrar este recuadro y el texto que tiene dentro. Esta acción no se puede deshacer.',
+        ()=>{
+          const item = findItem(story, arcId);
+          item.boxes = item.boxes.filter(b=>b.id!==btn.dataset.delBox);
+          scheduleSave(); render();
+        }
+      );
+    });
+  });
+
+  // characters
+  document.getElementById('add-char-btn').addEventListener('click', ()=>openCharModal(story));
+  document.querySelectorAll('[data-char-id]').forEach(card=>{
+    card.addEventListener('click', (e)=>{
+      const c = story.characters.find(c=>c.id===card.dataset.charId);
+      openCharModal(story, c);
+    });
+    card.addEventListener('dragstart', ()=>{ dragCharId = card.dataset.charId; card.classList.add('dragging'); });
+    card.addEventListener('dragend', ()=>{ card.classList.remove('dragging'); dragCharId=null; });
+    card.addEventListener('dragover', e=>e.preventDefault());
+    card.addEventListener('drop', e=>{
+      e.preventDefault(); e.stopPropagation();
+      const targetId = card.dataset.charId;
+      if(!dragCharId || dragCharId===targetId) return;
+      const fromIdx = story.characters.findIndex(c=>c.id===dragCharId);
+      const toIdx = story.characters.findIndex(c=>c.id===targetId);
+      const [moved] = story.characters.splice(fromIdx,1);
+      story.characters.splice(toIdx,0,moved);
+      scheduleSave(); render();
+    });
+  });
+
+  // ideas — reordenar en la lista, sacar a flotar, y devolver a la lista
+  document.getElementById('add-idea-btn').addEventListener('click', ()=>openIdeaModal(story));
+  document.querySelectorAll('[data-idea-id]').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      const idea = story.ideas.find(i=>i.id===card.dataset.ideaId);
+      openIdeaModal(story, idea);
+    });
+    card.addEventListener('dragstart', ()=>{ dragIdeaId = card.dataset.ideaId; card.classList.add('dragging'); });
+    card.addEventListener('dragend', ()=>{ card.classList.remove('dragging'); dragIdeaId=null; });
+  });
+  document.querySelectorAll('.idea-card').forEach(card=>{
+    card.addEventListener('dragover', e=>e.preventDefault());
+    card.addEventListener('drop', e=>{
+      e.preventDefault(); e.stopPropagation();
+      if(!dragIdeaId) return;
+      const idea = story.ideas.find(i=>i.id===dragIdeaId);
+      if(!idea) return;
+      idea.floating = null;
+      const targetId = card.dataset.ideaId;
+      if(dragIdeaId !== targetId){
+        const fromIdx = story.ideas.findIndex(i=>i.id===dragIdeaId);
+        const toIdx = story.ideas.findIndex(i=>i.id===targetId);
+        const [moved] = story.ideas.splice(fromIdx,1);
+        story.ideas.splice(toIdx,0,moved);
+      }
+      scheduleSave(); render();
+    });
+  });
+  const ideasList = document.getElementById('ideas-list');
+  if(ideasList){
+    ideasList.addEventListener('dragover', e=>e.preventDefault());
+    ideasList.addEventListener('drop', e=>{
+      e.preventDefault();
+      if(!dragIdeaId) return;
+      const idea = story.ideas.find(i=>i.id===dragIdeaId);
+      if(idea && idea.floating){ idea.floating = null; scheduleSave(); render(); }
+    });
+  }
+  const timelineCol = document.getElementById('timeline-col');
+  if(timelineCol){
+    timelineCol.addEventListener('dragover', e=>e.preventDefault());
+    timelineCol.addEventListener('drop', e=>{
+      e.preventDefault();
+      if(!dragIdeaId) return;
+      const idea = story.ideas.find(i=>i.id===dragIdeaId);
+      if(!idea) return;
+      const rect = timelineCol.getBoundingClientRect();
+      const x = Math.max(0, e.clientX - rect.left + timelineCol.scrollLeft);
+      const y = Math.max(0, e.clientY - rect.top + timelineCol.scrollTop);
+      idea.floating = { x, y };
+      scheduleSave(); render();
+    });
+  }
+
+  // relaciones entre personajes
+  const openRelBtn = document.getElementById('open-relations-panel');
+  if(openRelBtn){
+    openRelBtn.addEventListener('click', ()=> openRelationsPanel(story));
+  }
+}
+
+function findRelationEntry(story, entryId){
+  for(const r of story.relations){
+    const e = r.entries.find(e=>e.id===entryId);
+    if(e) return e;
+  }
+  return null;
+}
+
+/* ---------- panel grande de relaciones ---------- */
+function openRelationsPanel(story){
+  showModal(`
+    <h2>Relaciones entre personajes</h2>
+    <div id="rel-panel-body"></div>
+  `, ()=>{ paintRelationsPanel(story); }, true);
+}
+
+function paintRelationsPanel(story){
+  const body = document.getElementById('rel-panel-body');
+  if(!body) return;
+  if(story.characters.length===0){
+    body.innerHTML = `<p class="sb-empty">Primero crea al menos un personaje para poder armar relaciones.</p>`;
+  } else {
+    body.innerHTML = `
+      <div class="rel-grid">
+        ${story.relations.map(r=>renderRelationBox(story,r)).join('')}
+      </div>
+      <button class="add-tile-mini" id="add-relation-btn" style="margin-top:14px;">+ Añadir recuadro de relación</button>
+    `;
+  }
+  attachRelationsPanelEvents(story);
+}
+
+function attachRelationsPanelEvents(story){
+  const addBtn = document.getElementById('add-relation-btn');
+  if(addBtn){
+    addBtn.addEventListener('click', ()=>{
+      showModal(`
+        <h2>Añadir recuadro de relación</h2>
+        <div class="field">
+          <label>¿De qué personaje se trata este recuadro?</label>
+          <select id="m-rel-char" style="width:100%;border:1px solid var(--line);border-radius:12px;padding:9px 11px;background:var(--surface);">
+            ${story.characters.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="modal-actions">
+          <span></span>
+          <div class="right">
+            <button class="btn-ghost" id="m-cancel">Cancelar</button>
+            <button class="btn-primary" id="m-save">Añadir</button>
+          </div>
+        </div>
+      `, ()=>{
+        document.getElementById('m-cancel').onclick = ()=> openRelationsPanel(story);
+        document.getElementById('m-save').onclick = ()=>{
+          const characterId = document.getElementById('m-rel-char').value;
+          story.relations.push({ id: uid(), characterId, entries: [] });
+          scheduleSave();
+          openRelationsPanel(story);
+        };
+      });
+    });
+  }
+  document.querySelectorAll('[data-del-relation]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const r = story.relations.find(r=>r.id===btn.dataset.delRelation);
+      const main = story.characters.find(c=>c.id===r.characterId);
+      confirmDelete(
+        'Eliminar recuadro de relación',
+        `Se va a borrar todo lo escrito sobre lo que ${main?main.name:'este personaje'} piensa de los demás. Esta acción no se puede deshacer.`,
+        ()=>{
+          story.relations = story.relations.filter(x=>x.id!==btn.dataset.delRelation);
+          scheduleSave();
+          openRelationsPanel(story);
+        }
+      );
+    });
+  });
+  document.querySelectorAll('[data-add-entry]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const r = story.relations.find(r=>r.id===btn.dataset.addEntry);
+      r.entries.push({ id: uid(), targetId:'', text:'' });
+      scheduleSave();
+      paintRelationsPanel(story);
+    });
+  });
+  document.querySelectorAll('[data-del-entry]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const r = story.relations.find(r=>r.id===btn.dataset.relationIdDel);
+      r.entries = r.entries.filter(e=>e.id!==btn.dataset.delEntry);
+      scheduleSave();
+      paintRelationsPanel(story);
+    });
+  });
+  document.querySelectorAll('[data-entry-target]').forEach(sel=>{
+    sel.addEventListener('change', ()=>{
+      const entry = findRelationEntry(story, sel.dataset.entryTarget);
+      if(entry) entry.targetId = sel.value;
+      scheduleSave();
+    });
+  });
+  document.querySelectorAll('[data-entry-text]').forEach(ta=>{
+    ta.addEventListener('input', ()=>{
+      const entry = findRelationEntry(story, ta.dataset.entryText);
+      if(entry) entry.text = ta.value;
+      scheduleSave();
+    });
+  });
+}
+
+function findBox(story, boxId){
+  for(const arco of story.arcos){
+    for(const item of arco.items){
+      const b = item.boxes.find(b=>b.id===boxId);
+      if(b) return b;
+    }
+  }
+  return null;
+}
+function findBoxWithItem(story, boxId){
+  for(const arco of story.arcos){
+    for(const item of arco.items){
+      const b = item.boxes.find(b=>b.id===boxId);
+      if(b) return { item, box: b };
+    }
+  }
+  return null;
+}
+
+function normalizeParas(container){
+  Array.from(container.childNodes).forEach(node=>{
+    if(node.nodeType===3){
+      const div = document.createElement('div');
+      div.className='para';
+      container.insertBefore(div, node);
+      div.appendChild(node);
+    } else if(node.nodeType===1){
+      node.classList.add('para');
+      node.classList.toggle('has-content', node.textContent.trim().length>0);
+    }
+  });
+  if(container.childNodes.length===0){
+    const div=document.createElement('div');
+    div.className='para';
+    container.appendChild(div);
+  }
+}
+
+function updateWordCounts(story){
+  document.querySelectorAll('.box-card').forEach(card=>{
+    const box = findBox(story, card.dataset.boxId);
+    if(!box) return;
+    const wc = countWords((box.paragraphs||[]).join(' '));
+    card.querySelector('.box-foot span').textContent = `${wc} palabras`;
+  });
+  document.querySelectorAll('[data-canvas-for]').forEach(wrap=>{
+    const item = findItem(story, wrap.dataset.canvasFor);
+    if(!item) return;
+    const label = wrap.querySelector('.arc-canvas-head .label');
+    if(label) label.textContent = `${item.type==='transicion'?'Transición':'Evento'} · ${arcWordCount(item)} palabras en total`;
+  });
+  document.querySelectorAll('[data-open-item]').forEach(node=>{
+    const item = findItem(story, node.dataset.openItem);
+    if(!item) return;
+    const wcEl = node.querySelector('.wc');
+    if(wcEl) wcEl.textContent = `${arcWordCount(item)} palabras`;
+  });
+  document.querySelectorAll('[data-open-arco]').forEach(node=>{
+    const arco = story.arcos.find(a=>a.id===node.dataset.openArco);
+    if(!arco) return;
+    const wcEl = node.querySelector('.wc');
+    if(wcEl) wcEl.textContent = `${arcoWordCount(arco)} palabras`;
+  });
+  document.querySelectorAll('.arco-body-head .label').forEach(label=>{
+    const wrap = label.closest('.arc-node-wrap');
+    if(!wrap) return;
+    const arco = story.arcos.find(a=>a.id===wrap.dataset.arcoId);
+    if(!arco) return;
+    label.textContent = `${arco.items.length} evento${arco.items.length===1?'':'s'} y transiciones · ${arcoWordCount(arco)} palabras en total`;
+  });
+}
+
+/* ---------- agregar arco (nivel superior) ---------- */
+function openAddArcoModal(afterId){
+  showModal(`
+    <h2>Nuevo arco</h2>
+    <div class="field"><label>Título</label><input type="text" id="m-arco-title" placeholder="Título del arco"></div>
+    <div class="modal-actions">
+      <span></span>
+      <div class="right">
+        <button class="btn-ghost" id="m-cancel">Cancelar</button>
+        <button class="btn-primary" id="m-save">Añadir</button>
+      </div>
+    </div>
+  `, ()=>{
+    document.getElementById('m-arco-title').focus();
+    document.getElementById('m-cancel').onclick = closeModal;
+    document.getElementById('m-save').onclick = ()=>{
+      const title = document.getElementById('m-arco-title').value.trim();
+      if(!title) return;
+      const story = getStory(view.storyId);
+      const newArco = { id: uid(), title, items: [] };
+      if(afterId==='start'){
+        story.arcos.unshift(newArco);
+      } else {
+        const idx = story.arcos.findIndex(a=>a.id===afterId);
+        story.arcos.splice(idx+1,0,newArco);
+      }
+      scheduleSave(); closeModal(); render();
+    };
+  });
+}
+
+/* ---------- insertar evento/transición dentro de un arco ---------- */
+function openInsertItemChooser(story, arco, afterId, anchorEl){
+  document.querySelectorAll('.mini-chooser').forEach(m=>m.remove());
+  const rect = anchorEl.getBoundingClientRect();
+  const chooser = document.createElement('div');
+  chooser.className='mini-chooser';
+  chooser.style.cssText = `position:fixed; top:${rect.bottom+6}px; left:${rect.left}px; background:var(--surface); border:1px solid var(--line); border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.12); z-index:60; overflow:hidden;`;
+  chooser.innerHTML = `
+    <button style="display:block;width:160px;text-align:left;padding:10px 14px;font-size:13px;" data-kind="evento">+ Evento</button>
+    <button style="display:block;width:160px;text-align:left;padding:10px 14px;font-size:13px;border-top:1px solid var(--line);" data-kind="transicion">+ Transición</button>
+  `;
+  document.body.appendChild(chooser);
+  const remove = ()=>{ chooser.remove(); document.removeEventListener('click', outside); };
+  const outside = (e)=>{ if(!chooser.contains(e.target)) remove(); };
+  setTimeout(()=>document.addEventListener('click', outside),0);
+  chooser.querySelectorAll('[data-kind]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      remove();
+      openTitleModal(afterId==='start' ? 'inicio' : 'después', (title)=>{
+        const newItem = { id: uid(), title, type: b.dataset.kind, boxes: [] };
+        if(afterId==='start'){
+          arco.items.unshift(newItem);
+        } else {
+          const idx = arco.items.findIndex(i=>i.id===afterId);
+          arco.items.splice(idx+1,0,newItem);
+        }
+        scheduleSave(); render();
+      });
+    });
+  });
+}
+
+
+function openBoxChooser(story, arc, anchorEl){
+  document.querySelectorAll('.mini-chooser').forEach(m=>m.remove());
+  const rect = anchorEl.getBoundingClientRect();
+  const chooser = document.createElement('div');
+  chooser.className='mini-chooser';
+  chooser.style.cssText = `position:fixed; top:${rect.top}px; left:${rect.right+8}px; background:var(--surface); border:1px solid var(--line); border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.12); z-index:60; overflow:hidden;`;
+  chooser.innerHTML = `
+    <button style="display:block;width:170px;text-align:left;padding:10px 14px;font-size:13px;" data-choice="new">+ Crear nuevo</button>
+    ${boxClipboard ? `<button style="display:block;width:170px;text-align:left;padding:10px 14px;font-size:13px;border-top:1px solid var(--line);" data-choice="paste">Pegar recuadro</button>` : ''}
+  `;
+  document.body.appendChild(chooser);
+  const remove = ()=>{ chooser.remove(); document.removeEventListener('click', outside); };
+  const outside = (e)=>{ if(!chooser.contains(e.target) && e.target!==anchorEl) remove(); };
+  setTimeout(()=>document.addEventListener('click', outside),0);
+  chooser.querySelector('[data-choice="new"]').addEventListener('click', ()=>{
+    remove();
+    arc.boxes.push({ id: uid(), title:'', paragraphs:[''] });
+    scheduleSave(); render();
+    const newBox = document.querySelector(`[data-box-title="${arc.boxes[arc.boxes.length-1].id}"]`);
+    if(newBox) newBox.focus();
+  });
+  const pasteBtn = chooser.querySelector('[data-choice="paste"]');
+  if(pasteBtn){
+    pasteBtn.addEventListener('click', ()=>{
+      remove();
+      arc.boxes.push({ id: uid(), title: boxClipboard.title, paragraphs: [...boxClipboard.paragraphs] });
+      scheduleSave(); render();
+    });
+  }
+}
+
+function openTitleModal(where, onConfirm){
+  showModal(`
+    <h2>Título</h2>
+    <div class="field"><label>Nombre de este momento de la historia</label><input type="text" id="m-arc-title" placeholder="Título"></div>
+    <div class="modal-actions">
+      <span></span>
+      <div class="right">
+        <button class="btn-ghost" id="m-cancel">Cancelar</button>
+        <button class="btn-primary" id="m-save">Añadir</button>
+      </div>
+    </div>
+  `, ()=>{
+    document.getElementById('m-arc-title').focus();
+    document.getElementById('m-cancel').onclick = closeModal;
+    document.getElementById('m-save').onclick = ()=>{
+      const title = document.getElementById('m-arc-title').value.trim();
+      if(!title) return;
+      closeModal();
+      onConfirm(title);
+    };
+  });
+}
+
+/* ---------- character modal ---------- */
+function openCharModal(story, existing){
+  const c = existing || { id:null, name:'', age:'', height:'', description:'', image:'', tag:'' };
+  showModal(`
+    <h2>${existing?'Editar personaje':'Nuevo personaje'}</h2>
+    <div class="field"><label>Nombre</label><input type="text" id="c-name" value="${esc(c.name)}"></div>
+    <div class="field-row">
+      <div class="field"><label>Edad</label><input type="text" id="c-age" value="${esc(c.age)}"></div>
+      <div class="field"><label>Estatura</label><input type="text" id="c-height" value="${esc(c.height)}"></div>
+    </div>
+    <div class="field"><label>Descripción — personalidad y motivaciones</label><textarea id="c-desc" rows="4">${esc(c.description)}</textarea></div>
+    <div class="field">
+      <label>Etiqueta</label>
+      <div class="tag-options" id="c-tags">
+        ${TAGS.map(t=>`<button type="button" class="tag-opt ${c.tag===t?'sel':''}" data-tag="${t}">${t}</button>`).join('')}
+      </div>
+    </div>
+    <div class="field">
+      <label>Imagen</label>
+      <div class="img-drop" id="c-img-drop">${c.image?`<img src="${c.image}">`:'Haz clic para subir una imagen'}</div>
+      <input type="file" id="c-img-input" accept="image/*" style="display:none;">
+    </div>
+    <div class="modal-actions">
+      <span>${existing?'<button class="link-danger" id="m-delete">Eliminar personaje</button>':''}</span>
+      <div class="right">
+        <button class="btn-ghost" id="m-cancel">Cancelar</button>
+        <button class="btn-primary" id="m-save">Guardar</button>
+      </div>
+    </div>
+  `, ()=>{
+    let selectedTag = c.tag;
+    let selectedImg = c.image;
+    document.getElementById('c-name').focus();
+    document.querySelectorAll('#c-tags .tag-opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        selectedTag = selectedTag===btn.dataset.tag ? '' : btn.dataset.tag;
+        document.querySelectorAll('#c-tags .tag-opt').forEach(b=>b.classList.toggle('sel', b.dataset.tag===selectedTag));
+      });
+    });
+    document.getElementById('c-img-drop').addEventListener('click', ()=>document.getElementById('c-img-input').click());
+    document.getElementById('c-img-input').addEventListener('change', (e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        selectedImg = reader.result;
+        document.getElementById('c-img-drop').innerHTML = `<img src="${selectedImg}">`;
+      };
+      reader.readAsDataURL(file);
+    });
+    document.getElementById('m-cancel').onclick = closeModal;
+    if(existing){
+      document.getElementById('m-delete').onclick = ()=>{
+        confirmDelete(
+          'Eliminar personaje',
+          `Se va a borrar a "${existing.name}" y toda su información. Esta acción no se puede deshacer.`,
+          ()=>{
+            story.characters = story.characters.filter(ch=>ch.id!==c.id);
+            scheduleSave(); render();
+          }
+        );
+      };
+    }
+    document.getElementById('m-save').onclick = ()=>{
+      const name = document.getElementById('c-name').value.trim();
+      if(!name) return;
+      const data = {
+        id: c.id || uid(),
+        name,
+        age: document.getElementById('c-age').value.trim(),
+        height: document.getElementById('c-height').value.trim(),
+        description: document.getElementById('c-desc').value.trim(),
+        tag: selectedTag,
+        image: selectedImg
+      };
+      if(existing){
+        Object.assign(existing, data);
+      } else {
+        story.characters.push(data);
+      }
+      scheduleSave(); closeModal(); render();
+    };
+  });
+}
+
+/* ---------- idea modal ---------- */
+function openIdeaModal(story, existing){
+  showModal(`
+    <h2>${existing?'Editar idea':'Nueva idea'}</h2>
+    <div class="field"><textarea id="i-text" rows="5" placeholder="Escribe la idea suelta...">${esc(existing?existing.text:'')}</textarea></div>
+    <div class="modal-actions">
+      <span>${existing?'<button class="link-danger" id="m-delete">Eliminar</button>':''}</span>
+      <div class="right">
+        <button class="btn-ghost" id="m-cancel">Cancelar</button>
+        <button class="btn-primary" id="m-save">Guardar</button>
+      </div>
+    </div>
+  `, ()=>{
+    document.getElementById('i-text').focus();
+    document.getElementById('m-cancel').onclick = closeModal;
+    if(existing){
+      document.getElementById('m-delete').onclick = ()=>{
+        confirmDelete(
+          'Eliminar idea',
+          'Se va a borrar esta idea suelta. Esta acción no se puede deshacer.',
+          ()=>{
+            story.ideas = story.ideas.filter(i=>i.id!==existing.id);
+            scheduleSave(); render();
+          }
+        );
+      };
+    }
+    document.getElementById('m-save').onclick = ()=>{
+      const text = document.getElementById('i-text').value.trim();
+      if(!text) return;
+      if(existing){ existing.text = text; }
+      else { story.ideas.push({ id: uid(), text }); }
+      scheduleSave(); closeModal(); render();
+    };
+  });
+}
+
+/* ---------- confirmación de eliminar ---------- */
+function confirmDelete(title, message, onConfirm){
+  showModal(`
+    <h2>${esc(title)}</h2>
+    <p class="confirm-warning">${esc(message)}</p>
+    <div class="confirm-switch-row">
+      <div class="mini-toggle" id="confirm-toggle"><div class="knob"></div></div>
+      <span>Activa esto para poder eliminar</span>
+    </div>
+    <div class="modal-actions">
+      <span></span>
+      <div class="right">
+        <button class="btn-ghost" id="m-cancel">Cancelar</button>
+        <button class="btn-danger" id="m-confirm-delete">Eliminar</button>
+      </div>
+    </div>
+  `, ()=>{
+    const toggle = document.getElementById('confirm-toggle');
+    const confirmBtn = document.getElementById('m-confirm-delete');
+    let enabled = false;
+    toggle.addEventListener('click', ()=>{
+      enabled = !enabled;
+      toggle.classList.toggle('on', enabled);
+      confirmBtn.classList.toggle('active', enabled);
+    });
+    document.getElementById('m-cancel').onclick = closeModal;
+    confirmBtn.addEventListener('click', ()=>{
+      if(!enabled) return;
+      closeModal();
+      onConfirm();
+    });
+  });
+}
+
+/* ===================== MODAL SYSTEM ===================== */
+function showModal(innerHtml, onMount, large){
+  closeModal();
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.id = 'active-overlay';
+  overlay.innerHTML = `<div class="modal ${large?'modal-large':''}">${innerHtml}</div>`;
+  overlay.addEventListener('mousedown', (e)=>{ if(e.target===overlay) closeModal(); });
+  document.body.appendChild(overlay);
+  if(onMount) onMount();
+}
+function closeModal(){
+  const el = document.getElementById('active-overlay');
+  if(el) el.remove();
+}
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
+/* ===================== TEMA ===================== */
+const THEME_KEY = 'historias-organizador-theme';
+function initTheme(){
+  const saved = localStorage.getItem(THEME_KEY);
+  if(saved === 'dark'){ document.documentElement.setAttribute('data-theme','dark'); }
+}
+function toggleTheme(){
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if(isDark){
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem(THEME_KEY, 'light');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem(THEME_KEY, 'dark');
+  }
+  render();
+}
+function themeIcon(){
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return isDark
+    ? `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>`
+    : `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.5A9 9 0 1 1 11.5 3a7 7 0 0 0 9.5 9.5z"/></svg>`;
+}
+
+/* ===================== INIT ===================== */
+initTheme();
+loadState();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
+</script>
+</body>
+</html>
